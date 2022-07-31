@@ -42,7 +42,7 @@ namespace AncientNumerals.Tests
 
         [Property(StartSize = 1, EndSize = 9999, Arbitrary = new[] { typeof(CistercianNumberGenerator) })]
         [Trait("Type", "PropertyBased")]
-        public Property Given_AllCistercianNumbersStringified_Should_AllBeParsedBack(int number)
+        public Property Given_AllCistercianNumbersStringified_Should_BeParsedBack(int number)
         {
             Func<bool> property = () =>
             {
