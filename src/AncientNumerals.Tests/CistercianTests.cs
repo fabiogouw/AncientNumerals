@@ -15,6 +15,13 @@ namespace AncientNumerals.Tests
         }
 
         [Fact]
+        public void Numbers()
+        {
+            var c = new Cistercian(5555);
+            _output.WriteLine(c.ToString());
+        }
+
+        [Fact]
         [Trait("Type", "ExampleBased")]
         public void Should_ParseZero_When_AnEmptyCipherIsProvided()
         {
@@ -56,20 +63,22 @@ namespace AncientNumerals.Tests
             one.Value.Should().Be(1);
         }
 
-        [Fact]
+        [Property]
         [Trait("Type", "PropertyBased")]
-        public void WeCanGoBackFromTheCipherStringRepresentation()
+        public Property AllNumbersStringifiedCanBeParsedBack(int number)
         {
-            Prop.ForAll<int>(number =>
+            Func<bool> property = () =>
             {
-                Func<bool> property = () =>
-                {
-                    var asciiRepresentation = new Cistercian(number).ToString();
-                    var parsed = Cistercian.Parse(asciiRepresentation);
-                    return parsed.Value == number;
-                };
-                return property.When(number > 1 && number < 10000);
-            }).QuickCheck(_output);
+                var asciiRepresentation = new Cistercian(number).ToString();
+                var parsed = Cistercian.Parse(asciiRepresentation);
+                return parsed.Value == number;
+            };
+            return property.When(number > 0 && number < 10000)
+                .Classify(number > 0 && number < 10, "units")
+                .Classify(number >= 10 && number < 100, "dozens")
+                .Classify(number >= 100 && number < 1000, "hundreds")
+                .Classify(number >= 1000, "thousands")
+                ;
         }
     }
 }

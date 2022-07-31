@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AncientNumerals
+﻿namespace AncientNumerals
 {
     internal class NumberPattern
     {
@@ -12,7 +6,10 @@ namespace AncientNumerals
         public static int NUM_COLUMNS = 11;
         private char[,] _matrix = new char[NUM_LINES, NUM_COLUMNS];
         private static List<NumberPattern> _patterns = new List<NumberPattern>();
-
+        private readonly int _lowerLinesBoundary;
+        private readonly int _upperLinesBoundary;
+        private readonly int _lowerColumnsBoundary;
+        private readonly int _upperColumnsBoundary;
         public int Number { get; private set; }
 
         private NumberPattern(int number, string pattern)
@@ -21,12 +18,45 @@ namespace AncientNumerals
             try
             {
                 _matrix = ToMatrix(pattern);
+                (_lowerLinesBoundary, _upperLinesBoundary, _lowerColumnsBoundary, _upperColumnsBoundary) = SetQuadrantBoundaries(number);
             }
             catch (Exception ex)
             {
 
                 throw new ArgumentException($"Error while creating pattern for {number}", ex);
             }
+        }
+
+        private (int, int, int, int) SetQuadrantBoundaries(int number)
+        {
+            /*    [0]  [5]  [10]
+             * [0] .    .    .
+             *          |     
+             *          |     
+             *      10  |  1  
+             *          |     
+             *          |     
+             * [6] .    |    .
+             *          |     
+             *          |     
+             *     1000 | 100 
+             *          |     
+             *          |     
+             * [12].    .    .
+             */
+            if(number < 10)
+            {
+                return (0, 6, 5, 10);
+            }
+            if(number < 100)
+            {
+                return (0, 6, 0, 5);
+            }
+            if(number < 1000)
+            {
+                return (6, 12, 5, 10);
+            }
+            return (6, 12, 0, 5);
         }
 
         public static char[,] ToMatrix(string pattern)
@@ -54,22 +84,45 @@ namespace AncientNumerals
 
         public static char[,] CreateEmptyMatrix()
         {
-            return new char[NUM_LINES, NUM_COLUMNS];
-        }
-
-        public bool CanApply(char[,] compared)
-        {
+            var matrix = new char[NUM_LINES, NUM_COLUMNS];
             for (int x = 0; x < NUM_LINES; x++)
             {
                 for (int y = 0; y < NUM_COLUMNS; y++)
                 {
-                    if (_matrix[x, y] != ' ' && _matrix[x, y] != compared[x, y])
+                    matrix[x, y] = ' ';
+                }
+            }
+            return matrix;
+        }
+
+        public bool Contains(char[,] compared)
+        {
+            for (int x = _lowerLinesBoundary; x <= _upperLinesBoundary; x++)
+            {
+                for (int y = _lowerColumnsBoundary; y <= _upperColumnsBoundary; y++)
+                {
+                    if (_matrix[x, y] != compared[x, y])
                     {
                         return false;
                     }
                 }
             }
             return true;
+        }
+
+        public char[,] Apply(char[,] matrix)
+        {
+            for (int x = 0; x < NUM_LINES; x++)
+            {
+                for (int y = 0; y < NUM_COLUMNS; y++)
+                {
+                    if (_matrix[x, y] != ' ')
+                    {
+                        matrix[x, y] = _matrix[x, y];
+                    }
+                }
+            }
+            return matrix;
         }
 
         static NumberPattern()
@@ -535,7 +588,7 @@ namespace AncientNumerals
    / |     
   /  |     
  /   |     
-.    .----."));
+.----.    ."));
             _patterns.Add(new NumberPattern(6000, @"
 .    .    .
      |     

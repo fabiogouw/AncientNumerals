@@ -6,7 +6,7 @@ namespace AncientNumerals
     {
         private static IEnumerable<NumberPattern> _units = NumberPattern.GetAll()
             .Where(p => p.Number >= 1 && p.Number <= 9);
-        private static IEnumerable<NumberPattern> _tens = NumberPattern.GetAll()
+        private static IEnumerable<NumberPattern> _dozens = NumberPattern.GetAll()
             .Where(p => p.Number >= 10 && p.Number <= 90);
         private static IEnumerable<NumberPattern> _hundreds = NumberPattern.GetAll()
             .Where(p => p.Number >= 100 && p.Number <= 900);
@@ -21,23 +21,23 @@ namespace AncientNumerals
             var matrix = NumberPattern.ToMatrix(numeral);
             foreach (var unit in _units)
             {
-                if (unit.CanApply(matrix))
+                if (unit.Contains(matrix))
                 {
                     value += unit.Number;
                     break;
                 }
             }
-            foreach (var ten in _tens)
+            foreach (var dozen in _dozens)
             {
-                if (ten.CanApply(matrix))
+                if (dozen.Contains(matrix))
                 {
-                    value += ten.Number;
+                    value += dozen.Number;
                     break;
                 }
             }
             foreach (var hundred in _hundreds)
             {
-                if (hundred.CanApply(matrix))
+                if (hundred.Contains(matrix))
                 {
                     value += hundred.Number;
                     break;
@@ -45,7 +45,7 @@ namespace AncientNumerals
             }
             foreach (var thousend in _thousends)
             {
-                if (thousend.CanApply(matrix))
+                if (thousend.Contains(matrix))
                 {
                     value += thousend.Number;
                     break;
@@ -62,18 +62,10 @@ namespace AncientNumerals
 
         public override string ToString()
         {
-            var matrix = ApplyPattern(NumberPattern.GetFor(0), NumberPattern.CreateEmptyMatrix());
-            if(_value > 0)
+            var matrix = NumberPattern.GetFor(0).Apply(NumberPattern.CreateEmptyMatrix());
+            foreach(int numberPart in GetNumberParts(_value))
             {
-                matrix = ApplyPattern(NumberPattern.GetFor(_value % 10), NumberPattern.CreateEmptyMatrix());
-            }
-            if (_value > 10)
-            {
-                matrix = ApplyPattern(NumberPattern.GetFor(_value % 100), NumberPattern.CreateEmptyMatrix());
-            }
-            if (_value > 100)
-            {
-                matrix = ApplyPattern(NumberPattern.GetFor(_value % 1000), NumberPattern.CreateEmptyMatrix());
+                matrix = NumberPattern.GetFor(numberPart).Apply(matrix);
             }
             var sb = new StringBuilder();
             for(int x = 0; x < NumberPattern.NUM_LINES; x++)
@@ -90,9 +82,16 @@ namespace AncientNumerals
             return sb.ToString();
         }
 
-        private char[,] ApplyPattern(NumberPattern pattern, char[,] matrix)
+        private int[] GetNumberParts(int number)
         {
-            return matrix;
+            var result = new int[4];
+            for(int i = 0; i < 4; i++)
+            {
+                int currentNumberPart = number % (int)Math.Pow(10, i + 1);
+                int previousNumberPart = number % (int)Math.Pow(10, i);
+                result[i] = currentNumberPart - previousNumberPart;
+            }
+            return result.Where(x => x > 0).ToArray();
         }
 
         public int Value
