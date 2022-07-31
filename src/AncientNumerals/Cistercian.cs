@@ -4,14 +4,13 @@ namespace AncientNumerals
 {
     public class Cistercian
     {
-        private static IEnumerable<NumberPattern> _units = NumberPattern.GetAll()
-            .Where(p => p.Number >= 1 && p.Number <= 9);
-        private static IEnumerable<NumberPattern> _dozens = NumberPattern.GetAll()
-            .Where(p => p.Number >= 10 && p.Number <= 90);
-        private static IEnumerable<NumberPattern> _hundreds = NumberPattern.GetAll()
-            .Where(p => p.Number >= 100 && p.Number <= 900);
-        private static IEnumerable<NumberPattern> _thousends = NumberPattern.GetAll()
-            .Where(p => p.Number >= 1000 && p.Number <= 9000);
+        private static Dictionary<int, IEnumerable<NumberPattern>> _quadrantWithPatterns = new()
+        {
+            { 1, NumberPattern.GetAll().Where(p => p.Number >= 1 && p.Number <= 9) },
+            { 10, NumberPattern.GetAll().Where(p => p.Number >= 10 && p.Number <= 90) },
+            { 100, NumberPattern.GetAll().Where(p => p.Number >= 100 && p.Number <= 900) },
+            { 1000, NumberPattern.GetAll().Where(p => p.Number >= 1000 && p.Number <= 9000) }
+        };
 
         private int _value;
 
@@ -19,36 +18,15 @@ namespace AncientNumerals
         {
             int value = 0;
             var matrix = NumberPattern.ToMatrix(numeral.Trim());
-            foreach (var unit in _units)
+            foreach (var quadrant in _quadrantWithPatterns)
             {
-                if (unit.Contains(matrix))
+                foreach (var pattern in quadrant.Value)
                 {
-                    value += unit.Number;
-                    break;
-                }
-            }
-            foreach (var dozen in _dozens)
-            {
-                if (dozen.Contains(matrix))
-                {
-                    value += dozen.Number;
-                    break;
-                }
-            }
-            foreach (var hundred in _hundreds)
-            {
-                if (hundred.Contains(matrix))
-                {
-                    value += hundred.Number;
-                    break;
-                }
-            }
-            foreach (var thousend in _thousends)
-            {
-                if (thousend.Contains(matrix))
-                {
-                    value += thousend.Number;
-                    break;
+                    if (pattern.Contains(matrix))
+                    {
+                        value += pattern.Number;
+                        break;
+                    }
                 }
             }
             var cistercian = new Cistercian(value);
@@ -62,10 +40,11 @@ namespace AncientNumerals
 
         public override string ToString()
         {
-            var matrix = NumberPattern.GetFor(0).Apply(NumberPattern.CreateEmptyMatrix());
+            var matrix = NumberPattern.GetEmpty().FillInto(NumberPattern.CreateEmptyMatrix());
             foreach(int numberPart in GetNumberParts(_value))
             {
-                matrix = NumberPattern.GetFor(numberPart).Apply(matrix);
+                matrix = NumberPattern.GetFor(numberPart)
+                    .FillInto(matrix);
             }
             var sb = new StringBuilder();
             for(int line = 0; line < NumberPattern.NUM_LINES; line++)

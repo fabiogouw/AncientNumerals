@@ -29,7 +29,9 @@
 
         private (int, int, int, int) SetQuadrantBoundaries(int number)
         {
-            /*    [0]  [5]  [10]
+            /* Each number belongs to a specific quadrant
+             * 
+             *    [0]  [5]  [10]
              * [0] .    .    .
              *          |     
              *          |     
@@ -46,17 +48,17 @@
              */
             if(number < 10)
             {
-                return (0, 6, 5, 10);
+                return (0, 6, 5, 10);   // 1 to 9
             }
             if(number < 100)
             {
-                return (0, 6, 0, 5);
+                return (0, 6, 0, 5);    // 10 to 99
             }
             if(number < 1000)
             {
-                return (6, 12, 5, 10);
+                return (6, 12, 5, 10);  // 100 to 999
             }
-            return (6, 12, 0, 5);
+            return (6, 12, 0, 5);   // 1000 to 9999
         }
 
         public static char[,] ToMatrix(string pattern)
@@ -110,7 +112,7 @@
             return true;
         }
 
-        public char[,] Apply(char[,] matrix)
+        public char[,] FillInto(char[,] matrix)
         {
             for (int x = 0; x < NUM_LINES; x++)
             {
@@ -123,6 +125,26 @@
                 }
             }
             return matrix;
+        }
+
+        public static NumberPattern GetFor(int number)
+        {
+            var pattern = _patterns.SingleOrDefault(p => p.Number == number);
+            if (pattern == null)
+            {
+                throw new ArgumentException($"There's no pattern configured for {number}");
+            }
+            return pattern;
+        }
+
+        public static NumberPattern GetEmpty()
+        {
+            return GetFor(0);
+        }
+
+        public static IEnumerable<NumberPattern> GetAll()
+        {
+            return _patterns;
         }
 
         static NumberPattern()
@@ -645,21 +667,6 @@
 |    |     
 |    |     
 .----.    ."));
-        }
-
-        public static NumberPattern GetFor(int number)
-        {
-            var pattern = _patterns.SingleOrDefault(p => p.Number == number);
-            if (pattern == null)
-            {
-                throw new ArgumentException($"There's no pattern configured for {number}");
-            }
-            return pattern;
-        }
-
-        public static IEnumerable<NumberPattern> GetAll()
-        {
-            return _patterns;
         }
     }
 }
