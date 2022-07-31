@@ -18,7 +18,7 @@ namespace AncientNumerals
         public static Cistercian Parse(string numeral)
         {
             int value = 0;
-            var matrix = NumberPattern.ToMatrix(numeral);
+            var matrix = NumberPattern.ToMatrix(numeral.Trim());
             foreach (var unit in _units)
             {
                 if (unit.Contains(matrix))
@@ -68,18 +68,15 @@ namespace AncientNumerals
                 matrix = NumberPattern.GetFor(numberPart).Apply(matrix);
             }
             var sb = new StringBuilder();
-            for(int x = 0; x < NumberPattern.NUM_LINES; x++)
+            for(int line = 0; line < NumberPattern.NUM_LINES; line++)
             {
-                for(int y = 0; y < NumberPattern.NUM_COLUMNS; y++)
+                for(int column = 0; column < NumberPattern.NUM_COLUMNS; column++)
                 {
-                    sb.Append(matrix[x,y]);
+                    sb.Append(matrix[line,column]);
                 }
-                if(x < NumberPattern.NUM_LINES)
-                {
-                    sb.AppendLine();
-                }
+                sb.AppendLine();
             }
-            return sb.ToString();
+            return sb.ToString().Trim();
         }
 
         private int[] GetNumberParts(int number)

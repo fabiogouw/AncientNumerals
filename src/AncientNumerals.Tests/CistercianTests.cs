@@ -1,7 +1,8 @@
+using AncientNumerals.Tests.Properties;
 using FluentAssertions;
 using FsCheck;
-using Xunit.Abstractions;
 using FsCheck.Xunit;
+using Xunit.Abstractions;
 
 namespace AncientNumerals.Tests
 {
@@ -15,30 +16,11 @@ namespace AncientNumerals.Tests
         }
 
         [Fact]
-        public void Numbers()
-        {
-            var c = new Cistercian(5555);
-            _output.WriteLine(c.ToString());
-        }
-
-        [Fact]
         [Trait("Type", "ExampleBased")]
         public void Should_ParseZero_When_AnEmptyCipherIsProvided()
         {
-            var empty = Cistercian.Parse(@"
-.    .    .
-     |     
-     |     
-     |     
-     |     
-     |     
-.    |    .
-     |     
-     |     
-     |     
-     |     
-     |     
-.    .    .");
+            Resources.ResourceManager.GetString("");
+            var empty = Cistercian.Parse(Resources.String0000);
             empty.Value.Should().Be(0);
         }
 
@@ -46,26 +28,21 @@ namespace AncientNumerals.Tests
         [Trait("Type", "ExampleBased")]
         public void Should_ParseOne_When_CorrespondingCipherIsProvided()
         {
-            var one = Cistercian.Parse(@"
-.    .----.
-     |     
-     |     
-     |     
-     |     
-     |     
-.    |    .
-     |     
-     |     
-     |     
-     |     
-     |     
-.    .    .");
+            var one = Cistercian.Parse(Resources.String0001);
             one.Value.Should().Be(1);
         }
 
-        [Property]
+        [Fact]
+        [Trait("Type", "ExampleBased")]
+        public void Numbers()
+        {
+            var cistercian = new Cistercian(9999);
+            cistercian.ToString().Should().Be(Resources.String9999);
+        }
+
+        [Property(StartSize = 1, EndSize = 9999, Arbitrary = new[] { typeof(CistercianNumberGenerator) })]
         [Trait("Type", "PropertyBased")]
-        public Property AllNumbersStringifiedCanBeParsedBack(int number)
+        public Property Given_AllCistercianNumbersStringified_Should_AllBeParsedBack(int number)
         {
             Func<bool> property = () =>
             {
@@ -73,12 +50,8 @@ namespace AncientNumerals.Tests
                 var parsed = Cistercian.Parse(asciiRepresentation);
                 return parsed.Value == number;
             };
-            return property.When(number > 0 && number < 10000)
-                .Classify(number > 0 && number < 10, "units")
-                .Classify(number >= 10 && number < 100, "dozens")
-                .Classify(number >= 100 && number < 1000, "hundreds")
-                .Classify(number >= 1000, "thousands")
-                ;
+            return property
+                .Label($"Expected {number} to be stringified and parsed back");
         }
     }
 }
