@@ -1,7 +1,7 @@
-using AncientNumerals.Tests.Properties;
 using FluentAssertions;
 using FsCheck;
 using FsCheck.Xunit;
+using System.Text;
 using Xunit.Abstractions;
 
 namespace AncientNumerals.Tests
@@ -15,12 +15,37 @@ namespace AncientNumerals.Tests
             _output = output;
         }
 
+        private string GetFullString(string[] lines)
+        {
+            var sb = new StringBuilder();
+            foreach(string line in lines)
+            {
+                sb.AppendLine(line);
+            }
+            return sb.ToString().Trim(Environment.NewLine.ToCharArray());
+        }
+
         [Fact]
         [Trait("Type", "ExampleBased")]
         public void Should_ParseZero_When_AnEmptyCipherIsProvided()
         {
-            Resources.ResourceManager.GetString("");
-            var empty = Cistercian.Parse(Resources.String0000);
+            var asciiRepresentation = GetFullString(new[] 
+            {
+                ".    .    .",
+                "     |     ",
+                "     |     ",
+                "     |     ",
+                "     |     ",
+                "     |     ",
+                ".    |    .",
+                "     |     ",
+                "     |     ",
+                "     |     ",
+                "     |     ",
+                "     |     ",
+                ".    .    .",
+            });
+            var empty = Cistercian.Parse(asciiRepresentation);
             empty.Value.Should().Be(0);
         }
 
@@ -28,7 +53,23 @@ namespace AncientNumerals.Tests
         [Trait("Type", "ExampleBased")]
         public void Should_ParseOne_When_CorrespondingCipherIsProvided()
         {
-            var one = Cistercian.Parse(Resources.String0001);
+            var asciiRepresentation = GetFullString(new[]
+            {
+                ".    .----.",
+                "     |     ",
+                "     |     ",
+                "     |     ",
+                "     |     ",
+                "     |     ",
+                ".    |    .",
+                "     |     ",
+                "     |     ",
+                "     |     ",
+                "     |     ",
+                "     |     ",
+                ".    .    .",
+            });
+            var one = Cistercian.Parse(asciiRepresentation);
             one.Value.Should().Be(1);
         }
 
@@ -37,7 +78,23 @@ namespace AncientNumerals.Tests
         public void Numbers()
         {
             var cistercian = new Cistercian(9999);
-            cistercian.ToString().Should().Be(Resources.String9999);
+            var asciiRepresentation = GetFullString(new[]
+            {
+                ".----.----.",
+                "|    |    |",
+                "|    |    |",
+                "|    |    |",
+                "|----|----|",
+                "     |     ",
+                ".    |    .",
+                "     |     ",
+                "|----|----|",
+                "|    |    |",
+                "|    |    |",
+                "|    |    |",
+                ".----.----.",
+            });
+            cistercian.ToString().Should().Be(asciiRepresentation);
         }
 
         [Property(StartSize = 1, EndSize = 9999, Arbitrary = new[] { typeof(CistercianNumberGenerator) })]
