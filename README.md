@@ -8,6 +8,20 @@ This project is an example of the use of Proterty Based Tests with .NET. The cha
 
 ![Cistercian numerals](/docs/Cistercian_digits.svg.png)
 
+This is how we can read the numbers.
+
+![Cistercian numerals](/docs/cistencian_example.png)
+
+## Property-based test usage
+
+[FsCheck](https://fscheck.github.io/FsCheck/) library is used here to validade the following property of the system:
+
+*Every number that is transformed to a textual representation can be parse back to its original value.*
+
+So, given the previous example, after we get the textual representation for 5555, this text can be parsed back to 5555. This test can be found [here](https://github.com/fabiogouw/AncientNumerals/blob/ad50bb47e4fab8482e22812ae15dbd13bf536447/src/AncientNumerals.Tests/CistercianTests.cs#L45).
+
+## Cistercian class usage
+
 The output of this class is just a string representing the Cistercian notation, for example, below is the representation for **5555**.
 
 ````
@@ -25,15 +39,6 @@ The output of this class is just a string representing the Cistercian notation, 
  /   |   \ 
 .----.----.
 ````
-## Property-based test usage
-
-[FsCheck](https://fscheck.github.io/FsCheck/) library is used here to validade the following property of the system:
-
-*Every number that is transformed to a textual representation can be parse back to its original value.*
-
-So, given the previous example, after we get the textual representation for 5555, this text can be parsed back to 5555. This test can be found [here](https://github.com/fabiogouw/AncientNumerals/blob/ad50bb47e4fab8482e22812ae15dbd13bf536447/src/AncientNumerals.Tests/CistercianTests.cs#L45).
-
-## Cistercian class usage
 
 The basic usage of the Cistercian class is the following
 
