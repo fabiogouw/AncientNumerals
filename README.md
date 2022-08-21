@@ -4,9 +4,9 @@
 
 This project is an example of the use of Proterty Based Tests with .NET. The challenge here is to build a class that can parse and generate numbers in the Cistercian system.
 
-![Cistercian numerals](https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Cistercian_digits_%28vertical%29.svg/754px-Cistercian_digits_%28vertical%29.svg.png)
-
 > The medieval Cistercian numerals, or "ciphers" in nineteenth-century parlance, were developed by the Cistercian monastic order in the early thirteenth century at about the time that Arabic numerals were introduced to northwestern Europe. They are more compact than Arabic or Roman numerals, with a single glyph able to indicate any integer from 1 to 9,999. - [Wikipedia](https://en.wikipedia.org/wiki/Cistercian_numerals)
+
+![Cistercian numerals](/docs/Cistercian_digits.svg.png)
 
 The output of this class is just a string representing the Cistercian notation, for example, below is the representation for **5555**.
 
